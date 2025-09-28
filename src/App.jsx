@@ -29,7 +29,11 @@ const App = () => {
           element={<Login setIsAuthenticate={setIsAuthenticated} />}
           />
           <Route
-          path="/from"
+          path="/form"
+          element={<UserFrom />}
+          />
+          <Route
+          path="/*"
           element={<UserFrom />}
           />
           </>
