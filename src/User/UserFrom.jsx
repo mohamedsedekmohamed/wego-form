@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   User, MapPin, Building, GraduationCap, Calendar, 
-  Phone, Briefcase, DollarSign, School, Heart, Baby
+  Phone, Briefcase, PoundSterling, School, Heart, Baby
 } from "lucide-react";
 import axios from "axios";
-
+import wego from '../assets/wego.png'
+import { GoProjectSymlink } from "react-icons/go";
 
 const translations = {
   en: {
@@ -38,14 +39,18 @@ const translations = {
     single: "Single",
     married: "Married",
     separated: "Separated",
+    link:"link",
+    Upload_CV:"Upload_CV"
   },
   ar: {
+    Upload_CV:"تحميل السيرة الذاتية",
     careerRegistration: "تسجيل للوظيفة",
     careerSubText: "انضم إلى منصتنا الوظيفية وابحث عن وظيفتك المثالية",
     personalInfo: "المعلومات الشخصية",
     fullName: "الاسم الكامل",
     phone: "رقم الهاتف",
     birthDate: "تاريخ الميلاد",
+    link:"لينك",
     city: "المدينة",
     address: "العنوان",
     marital: "الحالة الاجتماعية",
@@ -90,7 +95,9 @@ const UserFrom=()=> {
     university: "",
     collage: "",
     marital: "",
-    children: "",
+    children: 0,
+    upload_cv:null,
+    link:""
   });
 
   const [data, setData] = useState({
@@ -98,7 +105,9 @@ const UserFrom=()=> {
     jobs: [],
     qualifications: []
   });
-  const [lang, setLang] = useState("en"); // en or ar
+  const fileInputRef = useRef(null);
+
+  const [lang, setLang] = useState("en"); 
   const [loading, setLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -112,7 +121,7 @@ const UserFrom=()=> {
       .get(`https://careerbcknd.wegostation.com/api/lists?locale=${lang}`)
       .then((res) => {
         setData(res.data);
-        setSecurity(true)
+        setSecurity(res.security_status)
       })
       .catch((err) => {
         setMessage("Failed to load form data ❌");
@@ -155,61 +164,80 @@ const UserFrom=()=> {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setMessage("");
 
-    const payload = {
-      security_number:number,
-      ...formData,
-    };
-    try {
-      await axios.post(
-        "https://careerbcknd.wegostation.com/api/send_email",
-        payload
-      );
+  try {
+    const form = new FormData();
+    form.append("security_number", number);
 
-      setMessage("Registration successful! 🎉");
-
-      setTimeout(() => {
-        setFormData({
-          name: "",
-          qualification_id: "",
-          city_id: "",
-          job_id: "",
-          birth_date: "",
-          graduate_date: "",
-          address: "",
-          phone: "",
-          experiences: "",
-          current_job: "",
-          courses: "",
-          expected_salary: "",
-          university: "",
-          collage: "",
-          marital: "",
-          children: "",
-        });
-        setMessage("");
-      }, 3000);
-
-    } catch (error) {
-      setMessage("Registration failed ❌");
-      console.error(error);
-    } finally {
-      setLoading(false);
+  Object.keys(formData).forEach((key) => {
+  if (formData[key] !== null && formData[key] !== "") {
+    if (key === "children" && formData.marital === "single") {
+      return; 
     }
-  };
+    form.append(key, formData[key]);
+  }
+});
+
+
+    await axios.post(
+      "https://careerbcknd.wegostation.com/api/send_email",
+      form,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    setMessage("Registration successful! 🎉");
+
+    setTimeout(() => {
+      setFormData({
+        name: "",
+        qualification_id: "",
+        city_id: "",
+        job_id: "",
+        birth_date: "",
+        graduate_date: "",
+        address: "",
+        phone: "",
+        experiences: "",
+        current_job: "",
+        courses: "",
+        expected_salary: "",
+        university: "",
+        collage: "",
+        marital: "",
+        children: 0,
+        upload_cv: null, 
+        link: "",
+      });
+      if (fileInputRef.current) {
+  fileInputRef.current.value = "";
+}
+
+      setMessage("");
+    }, 3000);
+  } catch (error) {
+    setMessage("Registration failed ❌");
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const t = translations[lang];
 
   if (dataLoading) {
     return (
-      <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+      <div className="w-screen h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="flex items-center space-x-2">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="text-blue-600 font-medium">Loading form data...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E78439]"></div>
+          <span className="text-[#E78437] font-medium">Loading form data...</span>
         </div>
       </div>
     );
@@ -220,10 +248,10 @@ const UserFrom=()=> {
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
         <div className="bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-2xl border border-white/20 w-full max-w-md">
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-[#E78437] rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold bg-[#E78437] bg-clip-text text-transparent">
               {translations[lang].careerRegistration}
             </h2>
             <p className="text-gray-600 mt-2">
@@ -242,7 +270,7 @@ const UserFrom=()=> {
             />
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-2xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all"
+              className="w-full bg-[#E78437] text-white py-3 rounded-2xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all"
             >
               Submit
             </button>
@@ -265,17 +293,18 @@ const UserFrom=()=> {
           <div dir={lang === "ar" ? "rtl" : "ltr"} className="relative">
             <button
               onClick={() => setLang(lang === "en" ? "ar" : "en")}
-              className="absolute top-4 right-4 px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300"
+              className="absolute top-4 right-0 md:right-2 lg:right-4 px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300"
             >
               {lang === "en" ? "AR" : "EN"}
             </button>
           </div>
 
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-8 h-8 text-white" />
+            <div className=" rounded-full flex items-center justify-center mx-auto mb-4">
+              {/* <User className="w-8 h-8 text-white" /> */}
+<img src={wego} className="w-50 h-15" alt="wego logo" />
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-bold py-1 bg-[#E78437] bg-clip-text text-transparent">
               {t.careerRegistration}
             </h2>
             <p className="text-gray-600 mt-2">{t.careerSubText}</p>
@@ -284,7 +313,7 @@ const UserFrom=()=> {
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6" dir={lang === "ar" ? "rtl" : "ltr"}>
             <div className="md:col-span-2">
               <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                <User className="w-5 h-5 mr-2 text-blue-600" />
+                <User className="w-5 h-5 mr-2 text-[#E78437]" />
                 {t.personalInfo}
               </h3>
             </div>
@@ -327,11 +356,13 @@ const UserFrom=()=> {
               lang={lang}
               required 
             />
-            <Field label={t.children} type="number" name="children" value={formData.children} onChange={handleChange} Icon={Baby} min="0" lang={lang} />
+        {formData.marital==="single"|| formData.marital&&(
+          <Field label={t.children} type="number" name="children" value={formData.children} onChange={handleChange} Icon={Baby} min="0" lang={lang} />
+        )}  
 
             <div className="md:col-span-2 mt-6">
               <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                <GraduationCap className="w-5 h-5 mr-2 text-blue-600" />
+                <GraduationCap className="w-5 h-5 mr-2 text-[#E78437]" />
                 {t.educationInfo}
               </h3>
             </div>
@@ -361,19 +392,54 @@ const UserFrom=()=> {
 
             <div className="md:col-span-2 mt-6">
               <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                <Briefcase className="w-5 h-5 mr-2 text-blue-600" />
+                <Briefcase className="w-5 h-5 mr-2 text-[#E78437]" />
                 {t.careerInfo}
               </h3>
             </div>
 
             <SelectField label={t.job} name="job_id" value={formData.job_id} onChange={handleChange} Icon={Briefcase} options={data.jobs} lang={lang} required />
-            <Field label={t.salary} name="expected_salary" type="number" value={formData.expected_salary} onChange={handleChange} Icon={DollarSign} min="0" lang={lang} required />
+            <Field label={t.salary} name="expected_salary" type="number" value={formData.expected_salary} onChange={handleChange} Icon={PoundSterling} min="0" lang={lang} required />
             <TextareaField label={t.currentJob} name="current_job" value={formData.current_job} onChange={handleChange} Icon={Briefcase} lang={lang} />
             <TextareaField label={t.experiences} name="experiences" value={formData.experiences} onChange={handleChange} Icon={Briefcase} lang={lang} required />
             <TextareaField label={t.courses} name="courses" value={formData.courses} onChange={handleChange} Icon={GraduationCap} lang={lang} />
+            <Field label={t.link} name="link" value={formData.link} onChange={handleChange} Icon={GoProjectSymlink} lang={lang}  />
+         <div className="flex flex-col space-y-2">
+  <label className="text-sm font-medium text-gray-700">{t.Upload_CV}</label>
+  
+  <input
+    type="file"
+    ref={fileInputRef}
+    onChange={(e) => {
+      const file = e.target.files[0];
+      if (file) {
+        setFormData({ ...formData, upload_cv: file });
+      }
+    }}
+    className="hidden"
+    id="upload_cv" 
+    required
+  />
+
+  {/* Custom button */}
+  <label
+    htmlFor="upload_cv"
+    className={`cursor-pointer flex items-center justify-center px-4 py-3 rounded-2xl 
+               ${!formData.upload_cv?"bg-gray-500":"bg-[#E78437]"} text-white font-medium
+               shadow-md hover:shadow-lg transition-all duration-200`}
+  >
+ {!formData.upload_cv?" Upload CV 📂" : formData.upload_cv.name}
+  </label>
+
+ 
+</div>
+
+
+
+
+
 
             <div className="md:col-span-2">
-              <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white py-3 rounded-lg">
+              <button type="submit" disabled={loading} className="w-full bg-[#E78437]  text-white py-3 rounded-lg">
                 {loading ? t.submitting : t.submit}
               </button>
             </div>
@@ -401,7 +467,7 @@ function Field({ label, name, type="text", value, onChange, Icon, lang, ...props
     <div className="flex flex-col">
       <label htmlFor={name} className="mb-2 text-sm font-medium text-gray-700">{label}</label>
       <div className="relative">
-        <Icon className={`absolute ${isRTL ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5`} />
+        <Icon className={`absolute ${isRTL ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 ${value?"text-[#E78437]":"text-gray-400"}  w-5 h-5`} />
         <input
           id={name}
           type={type}
@@ -424,7 +490,7 @@ function TextareaField({ label, name, value, onChange, Icon, lang, ...props }) {
     <div className="flex flex-col md:col-span-2">
       <label htmlFor={name} className="mb-2 text-sm font-medium text-gray-700">{label}</label>
       <div className="relative">
-        <Icon className={`absolute ${isRTL ? "right-3" : "left-3"} top-4 text-gray-400 w-5 h-5`} />
+        <Icon className={`absolute ${isRTL ? "right-3" : "left-3"} top-4 ${value?"text-[#E78437]":"text-gray-400"} w-5 h-5`} />
         <textarea
           id={name}
           name={name}
@@ -447,7 +513,7 @@ function SelectField({ label, name, value, onChange, Icon, options=[], lang, ...
     <div className="flex flex-col">
       <label htmlFor={name} className="mb-2 text-sm font-medium text-gray-700">{label}</label>
       <div className="relative">
-        <Icon className={`absolute ${isRTL ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5`} />
+        <Icon className={`absolute ${isRTL ? "right-3" : "left-3"} top-1/2 transform -translate-y-1/2 ${value?"text-[#E78437]":"text-gray-400"} w-5 h-5`} />
         <select
           id={name}
           name={name}

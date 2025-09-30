@@ -214,9 +214,9 @@ const filteredCities = cities.filter((city) => {
             </tr>
           </thead>
           <tbody>
-            {filteredCities.map((city) => (
+            {filteredCities.map((city,index) => (
               <tr key={city.id} className="hover:bg-gray-50">
-                <td className="p-3 border">{city.id}</td>
+                <td className="p-3 border">{index+1}</td>
                 <td className="p-3 border">{city.name}</td>
                 <td className="p-3 border">{city.ar_name || "-"}</td>
                 <td className="p-3 border">
@@ -396,24 +396,24 @@ const filteredCities = cities.filter((city) => {
         </div>
       )}
 
-      {/* Modal Delete Confirm */}
       {showConfirm && ( 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-lg max-w-sm w-full p-6 text-center">
-            <h2 className="text-lg font-bold mb-4">تأكيد الحذف</h2>
-            <p className="mb-6">هل أنت متأكد أنك تريد حذف هذه المدينة؟</p>
+         <h2 className="text-lg font-bold mb-4">Delete Confirmation</h2>
+<p className="mb-6">Are you sure you want to delete this city?</p>
+
             <div className="flex justify-center gap-4">
               <button
                 onClick={handleDelete}
                 className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
               >
-                حذف
+                Delete 
               </button>
               <button
                 onClick={() => setShowConfirm(false)}
                 className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
               >
-                إلغاء
+                Cancel
               </button>
             </div>
           </div>
