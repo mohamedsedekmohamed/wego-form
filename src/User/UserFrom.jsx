@@ -6,7 +6,9 @@ import {
 import axios from "axios";
 import wego from '../assets/wego.png'
 import { GoProjectSymlink } from "react-icons/go";
-
+import { IoLanguage } from "react-icons/io5";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const translations = {
   en: {
     careerRegistration: "Career Registration",
@@ -110,7 +112,6 @@ const UserFrom=()=> {
   const [lang, setLang] = useState("en"); 
   const [loading, setLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
-  const [message, setMessage] = useState("");
   const [security, setSecurity] = useState(false);
   const [securityPassed, setSecurityPassed] = useState(false);
   const [password, setPassword] = useState("");
@@ -124,7 +125,7 @@ const UserFrom=()=> {
         setSecurity(res.security_status)
       })
       .catch((err) => {
-        setMessage("Failed to load form data ❌");
+        toast.error("Failed to load form data ❌");
       })
       .finally(() => {
         setDataLoading(false);
@@ -134,7 +135,6 @@ const UserFrom=()=> {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     try {
       const response = await axios.post(
@@ -144,13 +144,13 @@ const UserFrom=()=> {
       if (response.data.security_number_status === true) {
         setNumber(response.data.security_number)
         setSecurityPassed(true);
+        toast.success("success")
       } else {
         setSecurityPassed(false);
-        setMessage("Wrong security number ❌");
+        toast.error("Wrong security number ❌");
       }
     } catch (error) {
-      console.error("Error:", error);
-      setMessage("Server error, please try again later ❌");
+      toast.error("Server error, please try again later ❌");
     } finally {
       setLoading(false);
     }
@@ -167,8 +167,7 @@ const UserFrom=()=> {
 const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
-  setMessage("");
-
+  
   try {
     const form = new FormData();
     form.append("security_number", number);
@@ -193,7 +192,7 @@ const handleSubmit = async (e) => {
       }
     );
 
-    setMessage("Registration successful! 🎉");
+    toast.success("Registration successful! 🎉");
 
     setTimeout(() => {
       setFormData({
@@ -220,11 +219,9 @@ const handleSubmit = async (e) => {
   fileInputRef.current.value = "";
 }
 
-      setMessage("");
     }, 3000);
   } catch (error) {
-    setMessage("Registration failed ❌");
-    console.error(error);
+    toast.error(error);
   } finally {
     setLoading(false);
   }
@@ -276,33 +273,32 @@ const handleSubmit = async (e) => {
             </button>
           </form>
 
-          {message && (
-            <div className="mt-4 p-3 rounded-2xl text-center font-medium bg-red-100 text-red-800 border border-red-200">
-              {message}
-            </div>
-          )}
+         
         </div>
+              <ToastContainer position="top-center" />
+        
       </div>
     );
   }
 
   return (
     <div className=" bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+          <ToastContainer position="top-center" />
+    
       <div className="relative z-10 w-full max-w-4xl">
-        <div className="bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-2xl border border-white/20">
-          <div dir={lang === "ar" ? "rtl" : "ltr"} className="relative">
-            <button
+          <button
               onClick={() => setLang(lang === "en" ? "ar" : "en")}
-              className="absolute top-4 right-0 md:right-2 lg:right-4 px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300"
+              className="absolute top-4 right-1 z-10 md:right-2 lg:right-4 flex items-center gap-2 px-3 py-1 rounded-lg text-white bg-orange-400 hover:bg-gray-300"
             >
-              {lang === "en" ? "AR" : "EN"}
+<span>              {lang === "en" ? "AR" : "EN"}
+</span>              <IoLanguage className="text-white text-2xl"/>
             </button>
-          </div>
+        <div className="bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-2xl border border-white/20">
+          
 
           <div className="text-center mb-8">
-            <div className=" rounded-full flex items-center justify-center mx-auto mb-4">
-              {/* <User className="w-8 h-8 text-white" /> */}
-<img src={wego} className="w-50 h-15" alt="wego logo" />
+            <div className=" rounded-full py-3 flex items-center justify-center mx-auto mb-4">
+<img src={wego}  alt="wego logo" />
             </div>
             <h2 className="text-3xl font-bold py-1 bg-[#E78437] bg-clip-text text-transparent">
               {t.careerRegistration}
@@ -320,6 +316,8 @@ const handleSubmit = async (e) => {
 
             <Field label={t.fullName} name="name" value={formData.name} onChange={handleChange} Icon={User} lang={lang} required />
             <Field label={t.phone} name="phone" value={formData.phone} onChange={handleChange} Icon={Phone} lang={lang} required />
+                        <SelectField label={t.job} name="job_id" value={formData.job_id} onChange={handleChange} Icon={Briefcase} options={data.jobs} lang={lang} required />
+
 <div className="mb-4">
   <label
     htmlFor="birth_date"
@@ -397,7 +395,6 @@ const handleSubmit = async (e) => {
               </h3>
             </div>
 
-            <SelectField label={t.job} name="job_id" value={formData.job_id} onChange={handleChange} Icon={Briefcase} options={data.jobs} lang={lang} required />
             <Field label={t.salary} name="expected_salary" type="number" value={formData.expected_salary} onChange={handleChange} Icon={PoundSterling} min="0" lang={lang} required />
             <TextareaField label={t.currentJob} name="current_job" value={formData.current_job} onChange={handleChange} Icon={Briefcase} lang={lang} />
             <TextareaField label={t.experiences} name="experiences" value={formData.experiences} onChange={handleChange} Icon={Briefcase} lang={lang} required />
@@ -444,15 +441,6 @@ const handleSubmit = async (e) => {
               </button>
             </div>
 
-            {message && (
-              <div className={`md:col-span-2 mt-4 p-4 rounded-2xl text-center font-medium ${
-                message.includes("successful") 
-                  ? "bg-green-100 text-green-800 border border-green-200" 
-                  : "bg-red-100 text-red-800 border border-red-200"
-              }`}>
-                {message}
-              </div>
-            )}
           </form>
         </div>
       </div>

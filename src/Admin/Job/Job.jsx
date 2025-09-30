@@ -263,8 +263,11 @@ const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
             className="border rounded-lg p-4 shadow-sm bg-white flex justify-between items-center"
           >
             <div>
-              <p className="font-semibold text-gray-800">{job.name}</p>
-              <p className="text-sm text-gray-500">{job.ar_name || "-"}</p>
+              <p className="font-semibold text-gray-800">
+            English Name:{job.name}</p>
+              <p className="text-sm text-gray-500"> Arabic Name:{job.ar_name || "-"}</p>
+              <p className="text-sm text-gray-500">English Link:{job.link_name || "-"}</p>
+              <p className="text-sm text-gray-500">Arabic Link:{job.ar_link_name || "-"}</p>
             
               <p
                 className={`text-sm font-semibold ${

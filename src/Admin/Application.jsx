@@ -134,12 +134,20 @@ const deleteApp = (id) => {
               </p>
               <p className="text-sm text-gray-500">{app.phone}</p>
             </div>
-            <button
+           <div className="flex gap-2">
+             <button
               onClick={() => setSelectedApp(app)}
               className="text-blue-600 hover:text-blue-800 transition"
             >
               <FaEye size={20} />
             </button>
+              <button
+                    onClick={() => deleteApp(app.id)}
+                    className="text-red-600 hover:text-red-800 transition"
+                  >
+                    <RiDeleteBin6Fill size={18} />
+                  </button>
+            </div>
           </div>
         ))}
         {currentApps.length === 0 && (
@@ -199,6 +207,7 @@ const deleteApp = (id) => {
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <InfoItem label="Birth Date" value={selectedApp.birth_date} />
+          <InfoItem label="Phone " value={selectedApp.phone} />
           <InfoItem label="Graduate Date" value={selectedApp.graduate_date} />
           <InfoItem label="Address" value={selectedApp.address} />
           <InfoItem label="Experiences" value={selectedApp.experiences} />
