@@ -22,26 +22,26 @@ const App = () => {
     <div className="max-w-screen">
       
       <Routes>
-        
-        {!isAuthenticated ? (
-          <>
-          <Route
+         <Route
           path="/"
           element={<Login setIsAuthenticate={setIsAuthenticated} />}
-          />
-          <Route
-          path="/form"
-          element={<UserFrom />}
           />
           <Route
           path="/*"
           element={<Error />}
           />
+        {!isAuthenticated ? (
+          <>
+         
+          <Route
+          path="/form"
+          element={<UserFrom />}
+          />
+          
           </>
         ) : (
           <Route path="/" element={<AllRoutes setIsAuthenticate={setIsAuthenticated} />}>
              <Route index element={<Navigate to="Application" replace />} />
-
             <Route path="City" element={<City />} />
             <Route path="Job" element={<Job />} />
             <Route path="Security" element={<Security />} />

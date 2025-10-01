@@ -14,7 +14,7 @@ const Error = () => {
         href="/form"
         className="mt-6 inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 transition"
       >
-        Go Home
+        Go Form
       </a>
     </div>  )
 }

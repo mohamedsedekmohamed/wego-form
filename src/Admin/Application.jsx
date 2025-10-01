@@ -134,7 +134,7 @@ const deleteApp = (id) => {
               </p>
               <p className="text-sm text-gray-500">{app.phone}</p>
             </div>
-           <div className="flex gap-2">
+           <div className="flex gap-24">
              <button
               onClick={() => setSelectedApp(app)}
               className="text-blue-600 hover:text-blue-800 transition"
