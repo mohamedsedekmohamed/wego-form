@@ -222,8 +222,12 @@ const handleSubmit = async (e) => {
 
     }, 3000);
   } catch (error) {
-    toast.error(error);
-  } finally {
+  const message =
+    error.response?.data?.errors || error.message || "Something went wrong";
+  toast.error(message);
+  console.log(message);
+}
+ finally {
     setLoading(false);
   }
 };
