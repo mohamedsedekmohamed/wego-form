@@ -224,8 +224,8 @@ const deleteApp = (id) => {
     <a href={selectedApp.link} className="text-gray-600 underline">{selectedApp.link   || "-"}</a>
   </p>   
   <a
-  href={selectedApp.cv}    // المسار للملف
-  download={selectedApp.cv}          // الاسم اللي هيتحمل بيه
+  href={selectedApp.cv}  
+  download={selectedApp.cv}          
   className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
 >
  cv
@@ -243,8 +243,9 @@ const deleteApp = (id) => {
 };
 const InfoItem = ({ label, value }) => (
   <p className="bg-gray-50 p-3 rounded-lg shadow-sm">
-    <span className="font-semibold text-gray-700">{label}: </span>
-    <span className="text-gray-600">{value || "-"}</span>
-  </p>
+  <span className="font-semibold text-gray-700">{label}: </span>
+  <span className="text-gray-600 break-words block">{value || "-"}</span>
+</p>
+
 );
 export default Application;

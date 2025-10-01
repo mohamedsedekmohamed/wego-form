@@ -26,13 +26,13 @@ const App = () => {
           path="/"
           element={<Login setIsAuthenticate={setIsAuthenticated} />}
           />
-          <Route
-          path="/*"
-          element={<Error />}
-          />
         {!isAuthenticated ? (
           <>
          
+          <Route
+          path="/*"
+          element={<Error nav="/form" tit="Form" /> }
+          />
           <Route
           path="/form"
           element={<UserFrom />}
@@ -46,6 +46,10 @@ const App = () => {
             <Route path="Job" element={<Job />} />
             <Route path="Security" element={<Security />} />
             <Route path="Application" element={<Application />} />
+              <Route
+          path="*"
+          element={<Error nav="/" tit="Application"/> }
+          />
           </Route>
         )}
       </Routes>
