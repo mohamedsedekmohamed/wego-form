@@ -8,6 +8,7 @@ import Security from './Admin/Security/Security'
 import Job from './Admin/Job/Job'
 import { Navigate } from "react-router-dom";
 import UserFrom from './User/UserFrom'
+import Error from "./Error";
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => JSON.parse(localStorage.getItem("isAuthenticated")) || false
@@ -34,7 +35,7 @@ const App = () => {
           />
           <Route
           path="/*"
-          element={<UserFrom />}
+          element={<Error />}
           />
           </>
         ) : (

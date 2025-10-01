@@ -144,7 +144,6 @@ const filteredJobs = jobs.filter((job) => {
 });
 
 
-
 const indexOfLast = currentPage * itemsPerPage;
 const indexOfFirst = indexOfLast - itemsPerPage;
 const currentJobs = filteredJobs.slice(indexOfFirst, indexOfLast);
