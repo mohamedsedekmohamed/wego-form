@@ -4,7 +4,9 @@ import { FaEye, FaTimes } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { GiSelfLove } from "react-icons/gi";
+import { FaShareAlt } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa6";
+import { FaHeart } from "react-icons/fa6";
 
 const Application = () => {
   const [applications, setApplications] = useState([]);
@@ -269,9 +271,9 @@ const shareApp = (app) => {
                     className=" transition"
                   >
                     {app.favourite === 1 ? (
-                      <GiSelfLove className="text-pink-700" size={18} />
+                      <FaHeart className="text-pink-700" size={18} />
                     ) : (
-                      <GiSelfLove size={18} />
+                      <FaRegHeart size={18} />
                     )}
                   </button>
                   <button
@@ -279,7 +281,7 @@ const shareApp = (app) => {
   className="text-green-600 hover:text-green-800 transition"
   title="Share Application"
 >
-  📤
+  <FaShareAlt  size={18} />
 </button>
 
                 </td>
@@ -327,9 +329,9 @@ const shareApp = (app) => {
                     className=" transition"
                   >
                     {app.favourite === 1 ? (
-                      <GiSelfLove className="text-pink-700" size={18} />
+                      <FaHeart className="text-pink-700" size={18} />
                     ) : (
-                      <GiSelfLove size={18} />
+                      <FaRegHeart size={18} />
                     )}
                   </button>
                   <button
@@ -337,7 +339,7 @@ const shareApp = (app) => {
   className="text-green-600 hover:text-green-800 transition"
   title="Share Application"
 >
-  📤
+  <FaShareAlt  size={18} />
 </button>
 
             </div>
