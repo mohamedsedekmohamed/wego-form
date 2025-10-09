@@ -4,6 +4,7 @@ import { FaEye, FaTimes } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { GiSelfLove } from "react-icons/gi";
 
 const Application = () => {
   const [applications, setApplications] = useState([]);
@@ -15,6 +16,8 @@ const Application = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchTrigger, setSearchTrigger] = useState(false);
   const [update, setUpdate] = useState(false);
+  const [filterFavourite, setFilterFavourite] = useState("");
+
   const itemsPerPage = 10;
 
   const token = localStorage.getItem("token");
@@ -29,23 +32,33 @@ const Application = () => {
   }, [update]);
 
   const jobs = [...new Set(applications.map((app) => app.job).filter(Boolean))];
-  const cities = [...new Set(applications.map((app) => app.city).filter(Boolean))];
-  const maritals = [...new Set(applications.map((app) => app.marital).filter(Boolean))];
+  const cities = [
+    ...new Set(applications.map((app) => app.city).filter(Boolean)),
+  ];
+  const maritals = [
+    ...new Set(applications.map((app) => app.marital).filter(Boolean)),
+  ];
 
   const filteredApps = applications.filter((app) => {
-    const matchesJob = filterJob ? app.job === filterJob : true;
-    const matchesCity = filterCity ? app.city === filterCity : true;
-    const matchesmarital = filtermarital ? app.marital === filtermarital : true;
+  const matchesJob = filterJob ? app.job === filterJob : true;
+  const matchesCity = filterCity ? app.city === filterCity : true;
+  const matchesmarital = filtermarital ? app.marital === filtermarital : true;
+  const matchesFavourite = filterFavourite !== "" ? app.favourite === Number(filterFavourite) : true;
 
-    const matchesSearch = searchTerm
-      ? [app.name, app.city, app.phone, app.job, app.marital]
-          .some((field) =>
-            field?.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-      : true;
+  const matchesSearch = searchTerm
+    ? [app.name, app.city, app.phone, app.job, app.marital].some((field) =>
+        field?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : true;
 
-    return matchesJob && matchesCity  && matchesSearch &&matchesmarital;
-  });
+  return (
+    matchesJob &&
+    matchesCity &&
+    matchesmarital &&
+    matchesFavourite &&
+    matchesSearch
+  );
+});
 
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
@@ -68,11 +81,51 @@ const Application = () => {
   };
 
   const resetFilters = () => {
-    setFilterJob("");
-    setFilterCity("");
-    setFiltermarital("");
-    setSearchTerm("");
-    setCurrentPage(1);
+  setFilterJob("");
+  setFilterCity("");
+  setFiltermarital("");
+  setFilterFavourite("");
+  setSearchTerm("");
+  setCurrentPage(1);
+};
+const shareApp = (app) => {
+  const shareData = {
+    title: `Application: ${app.name}`,
+    text: `
+📄 Name: ${app.name}
+💼 Job: ${app.job}
+🏙️ City: ${app.city}
+📞 Phone: ${app.phone}
+❤️ Favourite: ${app.favourite === 1 ? "Yes" : "No"}
+`.trim(),
+  };
+  if (navigator.share) {
+    navigator
+      .share(shareData)
+      .then(() => toast.success("Shared successfully ✅"))
+      .catch((err) => console.error("Share failed:", err));
+  } else {
+    navigator.clipboard.writeText(shareData.text);
+    toast.info("Sharing not supported — copied to clipboard 📋");
+  }
+};
+
+  const favouriteApp = (id, favourite) => {
+    const newFavourite = favourite === 1 ? 0 : 1; 
+
+    axios
+      .put(
+        `https://careerbcknd.wegostation.com/admin/application/status/${id}`,
+        { favourite: newFavourite },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(() => {
+        setUpdate((p) => !p);
+        toast.success("Application favourite status changed ✅");
+      })
+      .catch(() => {
+        toast.error("Failed to change favourite status ❌");
+      });
   };
 
   return (
@@ -80,10 +133,7 @@ const Application = () => {
       <ToastContainer position="top-center" />
       <h1 className="text-2xl font-bold mb-6 text-gray-800">📄 Applications</h1>
 
-      {/* 🔍 فلاتر البحث */}
       <div className="mb-6 flex flex-wrap gap-3 items-center">
-
-        {/* الوظائف */}
         <div className="flex items-center gap-2">
           <label className="font-medium text-gray-700">Job:</label>
           <select
@@ -102,9 +152,22 @@ const Application = () => {
             ))}
           </select>
         </div>
+<div className="flex items-center gap-2">
+  <label className="font-medium text-gray-700">Favourite:</label>
+  <select
+    value={filterFavourite}
+    onChange={(e) => {
+      setFilterFavourite(e.target.value);
+      setCurrentPage(1);
+    }}
+    className="border rounded px-3 py-1"
+  >
+    <option value="">All</option>
+    <option value="1">Favourite</option>
+    <option value="0">Not Favourite</option>
+  </select>
+</div>
 
-
-        {/* المدينة */}
         <div className="flex items-center gap-2">
           <label className="font-medium text-gray-700">City:</label>
           <select
@@ -123,7 +186,6 @@ const Application = () => {
             ))}
           </select>
         </div>
-        {/* المدينة */}
         <div className="flex items-center gap-2">
           <label className="font-medium text-gray-700">Maritals:</label>
           <select
@@ -143,7 +205,6 @@ const Application = () => {
           </select>
         </div>
 
-        {/* البحث العام */}
         <div className="flex items-center gap-2 flex-wrap">
           <label className="font-medium text-gray-700">Search:</label>
           <input
@@ -168,7 +229,6 @@ const Application = () => {
         </div>
       </div>
 
-      {/* 🧾 الجدول */}
       <div className="hidden md:block overflow-x-auto rounded-lg shadow">
         <table className="min-w-full text-sm border border-gray-200">
           <thead className="bg-gray-100 text-gray-700">
@@ -184,12 +244,14 @@ const Application = () => {
           <tbody>
             {currentApps.map((app, index) => (
               <tr key={app.id} className="hover:bg-gray-50">
-<td className="p-3 border">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                <td className="p-3 border">
+                  {(currentPage - 1) * itemsPerPage + index + 1}
+                </td>
                 <td className="p-3 border">{app.name}</td>
                 <td className="p-3 border">{app.job}</td>
                 <td className="p-3 border">{app.city}</td>
                 <td className="p-3 border">{app.phone}</td>
-                <td className="p-3 border text-center space-x-2">
+                <td className="p-3 border text-center space-x-2 flex justify-center flex-wrap">
                   <button
                     onClick={() => setSelectedApp(app)}
                     className="text-blue-600 hover:text-blue-800 transition"
@@ -202,6 +264,24 @@ const Application = () => {
                   >
                     <RiDeleteBin6Fill size={18} />
                   </button>
+                  <button
+                    onClick={() => favouriteApp(app.id, app.favourite)}
+                    className=" transition"
+                  >
+                    {app.favourite === 1 ? (
+                      <GiSelfLove className="text-pink-700" size={18} />
+                    ) : (
+                      <GiSelfLove size={18} />
+                    )}
+                  </button>
+                  <button
+  onClick={() => shareApp(app)}
+  className="text-green-600 hover:text-green-800 transition"
+  title="Share Application"
+>
+  📤
+</button>
+
                 </td>
               </tr>
             ))}
@@ -216,7 +296,6 @@ const Application = () => {
         </table>
       </div>
 
-      {/* 📱 الموبايل */}
       <div className="grid gap-4 md:hidden">
         {currentApps.map((app) => (
           <div
@@ -243,6 +322,24 @@ const Application = () => {
               >
                 <RiDeleteBin6Fill size={18} />
               </button>
+                 <button
+                    onClick={() => favouriteApp(app.id, app.favourite)}
+                    className=" transition"
+                  >
+                    {app.favourite === 1 ? (
+                      <GiSelfLove className="text-pink-700" size={18} />
+                    ) : (
+                      <GiSelfLove size={18} />
+                    )}
+                  </button>
+                  <button
+  onClick={() => shareApp(app)}
+  className="text-green-600 hover:text-green-800 transition"
+  title="Share Application"
+>
+  📤
+</button>
+
             </div>
           </div>
         ))}
@@ -251,7 +348,6 @@ const Application = () => {
         )}
       </div>
 
-      {/* 🔢 Pagination */}
       <div className="flex justify-center flex-wrap items-center gap-2 mt-6">
         <button
           disabled={currentPage === 1}
@@ -303,17 +399,26 @@ const Application = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <InfoItem label="Birth Date" value={selectedApp.birth_date} />
                 <InfoItem label="Phone" value={selectedApp.phone} />
-                <InfoItem label="Graduate Date" value={selectedApp.graduate_date} />
+                <InfoItem
+                  label="Graduate Date"
+                  value={selectedApp.graduate_date}
+                />
                 <InfoItem label="Address" value={selectedApp.address} />
                 <InfoItem label="Experiences" value={selectedApp.experiences} />
                 <InfoItem label="Current Job" value={selectedApp.current_job} />
                 <InfoItem label="Courses" value={selectedApp.courses} />
-                <InfoItem label="Expected Salary" value={selectedApp.expected_salary} />
+                <InfoItem
+                  label="Expected Salary"
+                  value={selectedApp.expected_salary}
+                />
                 <InfoItem label="University" value={selectedApp.university} />
                 <InfoItem label="Collage" value={selectedApp.collage} />
                 <InfoItem label="Marital" value={selectedApp.marital} />
                 <InfoItem label="Children" value={selectedApp.children} />
-                <InfoItem label="Qualification" value={selectedApp.qualification} />
+                <InfoItem
+                  label="Qualification"
+                  value={selectedApp.qualification}
+                />
                 <InfoItem label="Country" value={selectedApp.country} />
                 <InfoItem label="City" value={selectedApp.city} />
 
