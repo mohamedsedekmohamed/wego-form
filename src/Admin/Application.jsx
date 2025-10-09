@@ -135,101 +135,114 @@ const shareApp = (app) => {
       <ToastContainer position="top-center" />
       <h1 className="text-2xl font-bold mb-6 text-gray-800">📄 Applications</h1>
 
-      <div className="mb-6 flex flex-wrap gap-3 items-center">
-        <div className="flex items-center gap-2">
-          <label className="font-medium text-gray-700">Job:</label>
-          <select
-            value={filterJob}
-            onChange={(e) => {
-              setFilterJob(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border rounded px-3 py-1"
-          >
-            <option value="">All</option>
-            {jobs.map((job, idx) => (
-              <option key={idx} value={job}>
-                {job}
-              </option>
-            ))}
-          </select>
-        </div>
-<div className="flex items-center gap-2">
-  <label className="font-medium text-gray-700">Favourite:</label>
-  <select
-    value={filterFavourite}
-    onChange={(e) => {
-      setFilterFavourite(e.target.value);
-      setCurrentPage(1);
-    }}
-    className="border rounded px-3 py-1"
-  >
-    <option value="">All</option>
-    <option value="1">Favourite</option>
-    <option value="0">Not Favourite</option>
-  </select>
+  <div className="mb-6 flex flex-col gap-4">
+  {/* ===== Row 1: Filters ===== */}
+  <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+      <label className="font-medium text-gray-700 whitespace-nowrap">Job:</label>
+      <select
+        value={filterJob}
+        onChange={(e) => {
+          setFilterJob(e.target.value);
+          setCurrentPage(1);
+        }}
+        className="border rounded px-3 py-1 w-full sm:w-auto"
+      >
+        <option value="">All</option>
+        {jobs.map((job, idx) => (
+          <option key={idx} value={job}>
+            {job}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+      <label className="font-medium text-gray-700 whitespace-nowrap">Favourite:</label>
+      <select
+        value={filterFavourite}
+        onChange={(e) => {
+          setFilterFavourite(e.target.value);
+          setCurrentPage(1);
+        }}
+        className="border rounded px-3 py-1 w-full sm:w-auto"
+      >
+        <option value="">All</option>
+        <option value="1">Favourite</option>
+        <option value="0">Not Favourite</option>
+      </select>
+    </div>
+
+    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+      <label className="font-medium text-gray-700 whitespace-nowrap">City:</label>
+      <select
+        value={filterCity}
+        onChange={(e) => {
+          setFilterCity(e.target.value);
+          setCurrentPage(1);
+        }}
+        className="border rounded px-3 py-1 w-full sm:w-auto"
+      >
+        <option value="">All</option>
+        {cities.map((city, idx) => (
+          <option key={idx} value={city}>
+            {city}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Marital */}
+    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+      <label className="font-medium text-gray-700 whitespace-nowrap">Marital:</label>
+      <select
+        value={filtermarital}
+        onChange={(e) => {
+          setFiltermarital(e.target.value);
+          setCurrentPage(1);
+        }}
+        className="border rounded px-3 py-1 w-full sm:w-auto"
+      >
+        <option value="">All</option>
+        {maritals.map((mar, idx) => (
+          <option key={idx} value={mar}>
+            {mar}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  {/* ===== Row 2: Search Section ===== */}
+  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
+      <label className="font-medium text-gray-700 whitespace-nowrap">Search:</label>
+      <input
+        type="text"
+        placeholder="Search by name, phone, etc..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="border rounded px-3 py-1 w-full sm:w-64"
+      />
+    </div>
+
+    <div className="flex gap-2 w-full sm:w-auto">
+      <button
+        onClick={() => setSearchTrigger(!searchTrigger)}
+        className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition w-full sm:w-auto"
+      >
+        Search
+      </button>
+      <button
+        onClick={resetFilters}
+        className="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-600 transition w-full sm:w-auto"
+      >
+        Reset
+      </button>
+    </div>
+  </div>
 </div>
 
-        <div className="flex items-center gap-2">
-          <label className="font-medium text-gray-700">City:</label>
-          <select
-            value={filterCity}
-            onChange={(e) => {
-              setFilterCity(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border rounded px-3 py-1"
-          >
-            <option value="">All</option>
-            {cities.map((city, idx) => (
-              <option key={idx} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="font-medium text-gray-700">Maritals:</label>
-          <select
-            value={filtermarital}
-            onChange={(e) => {
-              setFiltermarital(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border rounded px-3 py-1"
-          >
-            <option value="">All</option>
-            {maritals.map((mar, idx) => (
-              <option key={idx} value={mar}>
-                {mar}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          <label className="font-medium text-gray-700">Search:</label>
-          <input
-            type="text"
-            placeholder="Search by name, phone, etc..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="border rounded px-3 py-1 w-64"
-          />
-          <button
-            onClick={() => setSearchTrigger(!searchTrigger)}
-            className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition"
-          >
-            Search
-          </button>
-          <button
-            onClick={resetFilters}
-            className="bg-gray-500 text-white px-4 py-1 rounded hover:bg-gray-600 transition"
-          >
-            Reset
-          </button>
-        </div>
-      </div>
 
       <div className="hidden md:block overflow-x-auto rounded-lg shadow">
         <table className="min-w-full text-sm border border-gray-200">
