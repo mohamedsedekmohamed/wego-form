@@ -170,6 +170,7 @@ const handleSubmit = async (e) => {
     toast.error("Please upload your CV ❌");
     return;
   }
+  
   setLoading(true);
   
   try {
