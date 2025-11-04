@@ -170,7 +170,7 @@ const handleSubmit = async (e) => {
     toast.error("Please upload your CV ❌");
     return;
   }
-  
+
   setLoading(true);
   
   try {
@@ -182,6 +182,7 @@ const handleSubmit = async (e) => {
     if (key === "children" && formData.marital === "single") {
       return; 
     }
+   
     form.append(key, formData[key]);
   }
 });
