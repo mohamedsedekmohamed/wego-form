@@ -166,7 +166,10 @@ const UserFrom=()=> {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
-  
+  if(formData.upload_cv===null){
+    toast.error("Please upload your CV ❌");
+    return;
+  }
   setLoading(true);
   
   try {
@@ -295,7 +298,7 @@ const handleSubmit = async (e) => {
               onClick={() => setLang(lang === "en" ? "ar" : "en")}
               className="absolute top-4 right-1 z-10 md:right-2 lg:right-4 flex items-center gap-2 px-3 py-1 rounded-lg text-white bg-orange-400 hover:bg-gray-300"
             >
-<span>              {lang === "en" ? "AR" : "EN"}
+<span>              {lang === "en" ? "EN" : "AR"}
 </span>              <IoLanguage className="text-white text-2xl"/>
             </button>
         <div className="bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-2xl border border-white/20">
@@ -405,35 +408,34 @@ const handleSubmit = async (e) => {
             <TextareaField label={t.experiences} name="experiences" value={formData.experiences} onChange={handleChange} Icon={Briefcase} lang={lang} required />
             <TextareaField label={t.courses} name="courses" value={formData.courses} onChange={handleChange} Icon={GraduationCap} lang={lang} />
             <Field label={t.link} name="link" value={formData.link} onChange={handleChange} Icon={GoProjectSymlink} lang={lang}  />
-         <div className="flex flex-col space-y-2">
+   <div className="flex flex-col space-y-2">
   <label className="text-sm font-medium text-gray-700">{t.Upload_CV}</label>
-  
+
   <input
     type="file"
     ref={fileInputRef}
+    id="upload_cv"
+    className="hidden"
+accept="image/*,.pdf,.doc,.docx"
     onChange={(e) => {
-      const file = e.target.files[0];
+      const file = e.target.files?.[0];
       if (file) {
-        setFormData({ ...formData, upload_cv: file });
+        setFormData((prev) => ({ ...prev, upload_cv: file }));
       }
     }}
-    className="hidden"
-    id="upload_cv" 
-    required
+    
   />
 
-  {/* Custom button */}
   <label
     htmlFor="upload_cv"
-    className={`cursor-pointer flex items-center justify-center px-4 py-3 rounded-2xl 
-               ${!formData.upload_cv?"bg-gray-500":"bg-[#E78437]"} text-white font-medium
+    className={`cursor-pointer flex items-center justify-center px-4 py-3 rounded-2xl
+               ${!formData.upload_cv ? "bg-gray-500" : "bg-[#E78437]"} text-white font-medium
                shadow-md hover:shadow-lg transition-all duration-200`}
   >
- {!formData.upload_cv?" Upload CV 📂" : formData.upload_cv.name}
+    {!formData.upload_cv ? "Upload CV 📂" : formData.upload_cv.name}
   </label>
-
- 
 </div>
+
 
 
 
